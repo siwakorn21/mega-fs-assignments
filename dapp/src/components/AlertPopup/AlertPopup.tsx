@@ -53,9 +53,7 @@ const AlertPopupContainer = styled.div`
     }
 `;
 
-const AlertPopup: React.FC<{
-    transaction: string;
-}> = ({ transaction }) => {
+const AlertPopup: React.FC = () => {
     const dispatch = useAppDispatch();
     const alertPopupState = useAppSelector(selectAlertPopupState);
     const transactionLink = `https://rinkeby.etherscan.io/tx/${
