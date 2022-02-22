@@ -119,21 +119,27 @@ const CEthDetail: React.FC = () => {
 
     const handleSupply = async (ethAmount: number) => {
         if (account) {
-            const res = await cEthContract.methods.mint().send({
-                from: account,
-                gasLimit: web3.utils.toHex(150000),
-                gasPrice: web3.utils.toHex(20000000000), // use ethgasstation.info (mainnet only)
-                value: web3.utils.toHex(
-                    web3.utils.toWei(ethAmount.toPrecision(8), 'ether')
-                ),
-            });
-            console.log(res);
-            dispatch(
-                setOpenAlertPopup({ open: true, transaction: res.blockHash })
-            );
+            await cEthContract.methods
+                .mint()
+                .send({
+                    from: account,
+                    gasLimit: web3.utils.toHex(150000),
+                    gasPrice: web3.utils.toHex(20000000000), // use ethgasstation.info (mainnet only)
+                    value: web3.utils.toHex(
+                        web3.utils.toWei(ethAmount.toPrecision(8), 'ether')
+                    ),
+                })
+                .on('transactionHash', function (hash: any) {
+                    dispatch(
+                        setOpenAlertPopup({
+                            open: true,
+                            transaction: hash as string,
+                        })
+                    );
+                })
+                .catch((err: any) => console.log(err));
             await updateBalance(account);
             await updateEthBalance(account);
-            window.alert('supply success');
         }
     };
 
@@ -153,20 +159,22 @@ const CEthDetail: React.FC = () => {
                     Withdraw
                 </NavbarButton>
             </div>
-            <div className="supply-detail-container">
-                <div className="supply-detail">
-                    <h4>Your Supplied</h4>
-                    <p>{ethBalance} ETH</p>
+            {transactionType === TransactionType.Supply && (
+                <div className="supply-detail-container">
+                    <div className="supply-detail">
+                        <h4>Your Supplied</h4>
+                        <p>{ethBalance} ETH</p>
+                    </div>
+                    <div className="supply-detail">
+                        <h4>Total Supplied</h4>
+                        <p>{totalSupply / 1e8} ETH</p>
+                    </div>
+                    <div className="supply-detail">
+                        <h4>APY</h4>
+                        <p>{supplyApy.toFixed(2)} %</p>
+                    </div>
                 </div>
-                <div className="supply-detail">
-                    <h4>Total Supplied</h4>
-                    <p>{totalSupply / 1e8} ETH</p>
-                </div>
-                <div className="supply-detail">
-                    <h4>APY</h4>
-                    <p>{supplyApy.toFixed(2)} %</p>
-                </div>
-            </div>
+            )}
             <div className="transaction-container">
                 <div className="transaction-title">
                     <h3>{transactionType}</h3>
@@ -188,7 +196,7 @@ const CEthDetail: React.FC = () => {
                                 max
                             </button>
                             <input
-                                value={supplyAmount.toString()}
+                                value={supplyAmount}
                                 onChange={(e) =>
                                     setSupplyAmount(Number(e.target.value))
                                 }
@@ -207,33 +215,46 @@ const CEthDetail: React.FC = () => {
                     </>
                 )}
                 {transactionType === TransactionType.Withdraw && (
-                    <div>
-                        <input
-                            id="amount"
-                            type="number"
-                            onChange={(e) =>
-                                setWithdrawnEthAmount(Number(e.target.value))
-                            }
-                            value={withdrawnEthAmount}
-                        />
-                        <button
-                            onClick={() =>
-                                setWithdrawnEthAmount(
-                                    Number(
-                                        (
-                                            Number(exchangeRateCurrent) *
-                                            cEthBalance
-                                        ).toPrecision(8)
+                    <>
+                        <div className="transaction-input-container">
+                            <div className="symbol-container">
+                                <p>ETH</p>
+                            </div>
+                            <input
+                                type="number"
+                                onChange={(e) =>
+                                    setWithdrawnEthAmount(
+                                        Number(e.target.value)
                                     )
-                                )
-                            }
+                                }
+                                value={withdrawnEthAmount}
+                            />
+                            <div className="unit">
+                                <p>ETH</p>
+                            </div>
+                            <button
+                                className="max-amount"
+                                onClick={() =>
+                                    setWithdrawnEthAmount(
+                                        Number(
+                                            (
+                                                Number(exchangeRateCurrent) *
+                                                cEthBalance
+                                            ).toPrecision(8)
+                                        )
+                                    )
+                                }
+                            >
+                                max
+                            </button>
+                        </div>
+                        <button
+                            className="transaction-button"
+                            onClick={() => redeemCEth(withdrawnEthAmount)}
                         >
-                            max
-                        </button>
-                        <button onClick={() => redeemCEth(withdrawnEthAmount)}>
                             withdraw
                         </button>
-                    </div>
+                    </>
                 )}
             </div>
         </CEthDetailStyled>
