@@ -17,6 +17,8 @@ const AlertPopupContainer = styled.div`
     //justify-content: center;
     align-items: center;
     position: relative;
+    background-color: #243a3a;
+    color: whitesmoke;
 
     h3 {
         font-size: 1.1rem;
@@ -27,23 +29,27 @@ const AlertPopupContainer = styled.div`
         font-size: 1rem;
         margin-top: 1.4rem;
         text-decoration: none;
+        color: black;
+        font-weight: bold;
         :hover {
             text-decoration: underline;
+            color: whitesmoke;
         }
     }
 
     button {
         width: 100%;
         border: none;
-        background-color: white;
+        background-color: #243a3a;
         position: absolute;
         bottom: 0;
-        border-top: 1px solid black;
+        border-top: 1px solid whitesmoke;
         border-bottom-left-radius: 1rem;
         border-bottom-right-radius: 1rem;
         padding: 1rem 0;
         cursor: pointer;
         font-size: 0.9rem;
+        color: whitesmoke;
     }
 `;
 

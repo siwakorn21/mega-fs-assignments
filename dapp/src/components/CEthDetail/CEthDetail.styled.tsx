@@ -35,19 +35,35 @@ export const CEthDetailStyled = styled.div`
                 color: white;
             }
 
+            h4 {
+                margin-top: 1rem;
+            }
+
+            p {
+                margin-top: 1rem;
+            }
+
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
             align-items: center;
             background-color: #0b1111;
             width: 30%;
-            height: 5rem;
+            height: 6rem;
             border-radius: 1rem;
         }
     }
 
+    .receive-amount {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        font-size: 0.6rem;
+        margin-top: 1rem;
+    }
+
     .transaction-container {
-        width: 30%;
+        width: 40%;
         height: 25rem;
         border-radius: 1rem;
         margin: 5rem auto;
@@ -63,6 +79,13 @@ export const CEthDetailStyled = styled.div`
             font-size: 1.3rem;
             color: white;
             background: transparent;
+        }
+
+        .current-balance {
+            position: absolute;
+            right: 0;
+            top: -2rem;
+            font-size: 0.6rem;
         }
 
         .loading-container {
@@ -92,11 +115,16 @@ export const CEthDetailStyled = styled.div`
                 border: none;
                 background-color: transparent;
                 font-size: 1rem;
+                top: 1rem;
+                :hover {
+                    color: whitesmoke;
+                }
             }
 
             .unit {
                 position: absolute;
                 right: 1rem;
+                top: 1rem;
             }
 
             input {
