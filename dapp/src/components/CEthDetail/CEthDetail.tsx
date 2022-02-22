@@ -167,40 +167,44 @@ const CEthDetail: React.FC = () => {
                     <p>{supplyApy.toFixed(2)} %</p>
                 </div>
             </div>
-            {/*<h4>supply rate per block: {supplyRatePerBlock}</h4>*/}
-            {/*<h4>current CEthDetail: {cEthBalance} CEthDetail</h4>*/}
-            {/*<h4>exchange rage: {exchangeRateCurrent} eth / ceth</h4>*/}
-            {/*<h4>*/}
-            {/*    current supply:{Number(exchangeRateCurrent) * cEthBalance}*/}
-            {/*    eth*/}
-            {/*</h4>*/}
             <div className="transaction-container">
                 <div className="transaction-title">
                     <h3>{transactionType}</h3>
                 </div>
-
                 {transactionType === TransactionType.Supply && (
-                    <div>
-                        <input
-                            value={supplyAmount.toString()}
-                            onChange={(e) =>
-                                setSupplyAmount(Number(e.target.value))
-                            }
-                            type="number"
-                        />
+                    <>
+                        <div className="transaction-input-container">
+                            <div className="symbol-container">
+                                <p>ETH</p>
+                            </div>
+                            <button
+                                className="max-amount"
+                                onClick={() =>
+                                    setSupplyAmount(
+                                        Number(ethBalance.toPrecision(8))
+                                    )
+                                }
+                            >
+                                max
+                            </button>
+                            <input
+                                value={supplyAmount.toString()}
+                                onChange={(e) =>
+                                    setSupplyAmount(Number(e.target.value))
+                                }
+                                type="number"
+                            />
+                            <div className="unit">
+                                <p>ETH</p>
+                            </div>
+                        </div>
                         <button
-                            onClick={() =>
-                                setSupplyAmount(
-                                    Number(ethBalance.toPrecision(8))
-                                )
-                            }
+                            className="transaction-button"
+                            onClick={() => handleSupply(supplyAmount)}
                         >
-                            max
-                        </button>
-                        <button onClick={() => handleSupply(supplyAmount)}>
                             supply
                         </button>
-                    </div>
+                    </>
                 )}
                 {transactionType === TransactionType.Withdraw && (
                     <div>
