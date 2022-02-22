@@ -65,6 +65,10 @@ export const CEthDetailStyled = styled.div`
             background: transparent;
         }
 
+        .loading-container {
+            margin-top: 7rem;
+        }
+
         .transaction-input-container {
             display: flex;
             align-items: center;
@@ -83,10 +87,11 @@ export const CEthDetailStyled = styled.div`
 
             .max-amount {
                 position: absolute;
-                left: 10rem;
+                left: 8rem;
                 cursor: pointer;
                 border: none;
                 background-color: transparent;
+                font-size: 1rem;
             }
 
             .unit {

@@ -7,6 +7,7 @@ import { cEthContract } from '../../web3/cEthContract';
 import { CEthDetailStyled, NavbarButton } from './CEthDetail.styled';
 import { useAppDispatch } from '../../app/hooks';
 import { setOpenAlertPopup } from '../../features/alertPopup/alertPopupSlice';
+import Loading from '../Loading/Loading';
 
 const ethMantissa = 1e18;
 const ethDecimals = 18;
@@ -46,6 +47,7 @@ const CEthDetail: React.FC = () => {
     const [transactionType, setTransactionType] = useState<TransactionType>(
         TransactionType.Supply
     );
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         if (account) {
@@ -94,31 +96,38 @@ const CEthDetail: React.FC = () => {
     };
 
     const redeemCEth = async (ethAmount: number) => {
+        setLoading(true);
         updateExchangeRateCurrent();
         if (account) {
             const redeemEthAmount = web3.utils
                 .toWei(ethAmount.toPrecision(8))
                 .toString();
-            const res = await cEthContract.methods
+            await cEthContract.methods
                 .redeemUnderlying(redeemEthAmount)
                 .send({
                     from: account,
                     gasLimit: web3.utils.toHex(150000),
                     gasPrice: web3.utils.toHex(20000000000), // use ethgasstation.info (mainnet only)
                 })
+                .on('transactionHash', function (hash: any) {
+                    dispatch(
+                        setOpenAlertPopup({
+                            open: true,
+                            transaction: hash as string,
+                        })
+                    );
+                })
                 .catch((err: any) => console.log(err));
-            dispatch(
-                setOpenAlertPopup({ open: true, transaction: res.blockHash })
-            );
             await updateBalance(account).catch((err) => console.log(err));
-            window.alert('update success');
         } else {
             console.log('Please connect wallet');
         }
+        setLoading(false);
     };
 
     const handleSupply = async (ethAmount: number) => {
         if (account) {
+            setLoading(true);
             await cEthContract.methods
                 .mint()
                 .send({
@@ -140,6 +149,7 @@ const CEthDetail: React.FC = () => {
                 .catch((err: any) => console.log(err));
             await updateBalance(account);
             await updateEthBalance(account);
+            setLoading(false);
         }
     };
 
@@ -163,11 +173,11 @@ const CEthDetail: React.FC = () => {
                 <div className="supply-detail-container">
                     <div className="supply-detail">
                         <h4>Your Supplied</h4>
-                        <p>{ethBalance} ETH</p>
+                        <p>{ethBalance.toFixed(8)} ETH</p>
                     </div>
                     <div className="supply-detail">
                         <h4>Total Supplied</h4>
-                        <p>{totalSupply / 1e8} ETH</p>
+                        <p>{(totalSupply / 1e8).toFixed(4)} ETH</p>
                     </div>
                     <div className="supply-detail">
                         <h4>APY</h4>
@@ -177,9 +187,14 @@ const CEthDetail: React.FC = () => {
             )}
             <div className="transaction-container">
                 <div className="transaction-title">
-                    <h3>{transactionType}</h3>
+                    <h3>{transactionType.toUpperCase()}</h3>
                 </div>
-                {transactionType === TransactionType.Supply && (
+                {loading && (
+                    <div className="loading-container">
+                        <Loading />
+                    </div>
+                )}
+                {!loading && transactionType === TransactionType.Supply && (
                     <>
                         <div className="transaction-input-container">
                             <div className="symbol-container">
@@ -214,7 +229,7 @@ const CEthDetail: React.FC = () => {
                         </button>
                     </>
                 )}
-                {transactionType === TransactionType.Withdraw && (
+                {!loading && transactionType === TransactionType.Withdraw && (
                     <>
                         <div className="transaction-input-container">
                             <div className="symbol-container">
