@@ -7,7 +7,7 @@ def solve(wordList, target):
         except:
             mem[word] = 1
     result = []
-    for i in range(0, 4, 2):
+    for i in range(0, len(target), 2):
         w = target[i:i+2]
         try:
             mem_word = mem[w]
